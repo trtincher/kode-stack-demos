@@ -1,0 +1,42 @@
+<% content_for :title, "#{@chart.title} · Review workflow" %>
+
+<div data-controller="review-shortcuts" data-action="keydown@document->review-shortcuts#handle">
+  <p class="mb-2 text-sm"><%= link_to "← All charts", review_root_path, class: "text-indigo-700 hover:underline" %></p>
+
+  <%= render "review/shared/toolbar" %>
+
+  <header class="mb-4 flex flex-wrap items-center gap-3">
+    <h1 class="page-title"><%= @chart.title %></h1>
+    <span id="chart_state" class="<%= @chart.state_badge %>"><%= @chart.state_label %></span>
+    <button type="button" class="btn-secondary ml-auto" data-action="review-shortcuts#toggleLegend"
+            data-review-shortcuts-target="legendToggle" aria-expanded="false" aria-controls="review_shortcuts_legend">
+      Keyboard shortcuts <kbd>?</kbd>
+    </button>
+  </header>
+
+  <%= render "review/shared/flash" %>
+  <%= render "review/charts/legend" %>
+
+  <div class="grid gap-6 lg:grid-cols-5">
+    <div class="space-y-6 lg:col-span-3">
+      <section class="card" aria-labelledby="encounter-heading">
+        <h2 id="encounter-heading" class="section-label mb-2">Encounter (synthetic)</h2>
+        <p class="text-slate-700"><%= @chart.encounter_summary %></p>
+      </section>
+
+      <section aria-labelledby="codes-heading">
+        <h2 id="codes-heading" class="section-label mb-2">Assigned codes (ICD-10-CM)</h2>
+        <div role="list" class="space-y-2">
+          <% editable = @chart.editable_by?(current_role) %>
+          <% @codes.each do |code| %>
+            <div role="listitem"><%= render "review/codes/code", code:, chart: @chart, editable: %></div>
+          <% end %>
+        </div>
+      </section>
+
+      <%= render "review/charts/actions", chart: @chart %>
+    </div>
+
+    <%= render "review/charts/timeline", entries: @timeline %>
+  </div>
+</div>

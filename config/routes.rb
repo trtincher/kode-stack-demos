@@ -10,6 +10,21 @@ Rails.application.routes.draw do
   # The Sidekiq dashboard has no authentication, so it is development-only.
   mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 
+  # Review workflow demo: a coded chart through QA review (aasm + PaperTrail).
+  namespace :review do
+    root "charts#index"
+    resource :role, only: :update
+    resource :reset, only: :create
+    resources :charts, only: %i[index show] do
+      member do
+        patch :submit
+        patch :return_to_coder
+        patch :approve
+      end
+      resources :codes, only: %i[show edit update]
+    end
+  end
+
   # Coding assistant + evals demo.
   namespace :assistant do
     root "suggestions#new"

@@ -1,0 +1,7 @@
+<%= turbo_stream.replace dom_id(@code) do %>
+  <%= render "review/codes/code", code: @code, chart: @chart, editable: true, autofocus: true %>
+<% end %>
+<%= turbo_stream.prepend "review_timeline", partial: "review/charts/timeline_entry", locals: { entry: @entry } %>
+<%= turbo_stream.update "review_flash" do %>
+  <%= render "review/shared/flash_message", notice: "Saved #{@code.code}. The change is on the audit timeline." %>
+<% end %>

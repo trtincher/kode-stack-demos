@@ -27,6 +27,10 @@ gem "sidekiq", "~> 8.0"
 # Lift this pin once Rails ships a json-3-compatible ActiveSupport::JSON.decode.
 gem "json", "~> 2.16"
 
+# Review demo: the chart state machine and its audit trail
+gem "aasm", "~> 6.0"
+gem "paper_trail", "~> 17.0"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
