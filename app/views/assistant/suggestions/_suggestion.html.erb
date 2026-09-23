@@ -1,0 +1,17 @@
+<%# One suggested code, appended by SuggestCodesJob as it arrives. %>
+<% level_badge = { high: "badge-success", medium: "badge-warning", low: "badge-danger" }.fetch(suggestion.confidence_level) %>
+<li class="card" id="suggestion_<%= suggestion.code.parameterize %>">
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="font-mono text-sm font-semibold text-slate-900"><%= suggestion.code %></span>
+    <span class="text-sm text-slate-700"><%= suggestion.description %></span>
+    <span class="<%= level_badge %> ml-auto" title="Model confidence, 0 to 1">
+      <%= suggestion.confidence_level %> · <%= format("%.2f", suggestion.confidence) %>
+    </span>
+  </div>
+  <blockquote class="mt-3 border-l-2 border-amber-300 pl-3 text-sm text-slate-700">
+    <mark class="rounded bg-amber-100 px-0.5 text-slate-900"><%= suggestion.evidence.presence || "(no evidence given)" %></mark>
+  </blockquote>
+  <% unless suggestion.evidence_found %>
+    <p class="mt-2"><span class="badge-danger">evidence not found in the note</span></p>
+  <% end %>
+</li>

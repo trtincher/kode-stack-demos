@@ -1,0 +1,196 @@
+# The assistant demo's golden set. Every note is synthetic and every code is
+# from the made-up KX catalog (app/models/assistant/code_catalog.rb).
+# showcase: true cases also appear as sample notes on the Assistant tab.
+# Several cases mention a finding only to deny or rule it out, and two mention
+# a condition only in family history: those are what the prompt has to handle.
+- key: htn-followup
+  title: Blood pressure follow-up
+  showcase: true
+  expected: [KX-C101, KX-C102, KX-Z901]
+  note: >-
+    58-year-old established patient returns for a blood pressure check. Home readings average 152/94
+    and she has essential hypertension on lisinopril. Lipid panel shows high cholesterol with an LDL of 171.
+    She smokes half a pack of cigarettes a day. Plan: increase lisinopril, start a statin, and counsel on cessation.
+- key: sore-throat
+  title: Sore throat, denies chest pain
+  showcase: true
+  expected: [KX-R302]
+  note: >-
+    Nineteen-year-old with a sore throat and fever for two days. Tonsils are swollen with exudate.
+    Rapid antigen testing was positive and we diagnosed acute pharyngitis. Denies cough or chest pain.
+    Amoxicillin for ten days.
+- key: diabetes-annual
+  title: Annual physical with diabetes
+  showcase: true
+  expected: [KX-Z902, KX-M201, KX-M220]
+  note: >-
+    Annual physical for a 47-year-old man. He has type 2 diabetes, last A1c 7.4, managed with metformin.
+    BMI is 33 and he meets criteria for obesity. Mood is good and he denies depression or anxiety.
+    Continue metformin and recheck the A1c in three months.
+- key: ankle-sprain
+  title: Rolled ankle
+  showcase: true
+  expected: [KX-S701]
+  note: >-
+    Twenty-four-year-old who rolled her right ankle playing basketball yesterday. Swelling over the lateral
+    malleolus; X-ray is negative for fracture. Assessment: lateral ankle sprain, grade one.
+    Rest, ice, compression, and a brace for two weeks.
+- key: uti
+  title: Dysuria
+  showcase: true
+  expected: [KX-N501]
+  note: >-
+    Thirty-two-year-old woman with dysuria and urinary frequency for three days. Urinalysis is consistent
+    with an uncomplicated urinary tract infection. Pyelonephritis is unlikely: no flank pain, afebrile.
+    Nitrofurantoin for five days.
+- key: reflux-anxiety
+  title: Heartburn and worry
+  showcase: true
+  expected: [KX-K601, KX-D802, KX-D803]
+  note: >-
+    Forty-one-year-old with burning heartburn after meals for two months, worse lying down. Assessment is
+    gastroesophageal reflux; start omeprazole. He also reports feeling anxious most days since a job change,
+    and trouble sleeping. Screened for generalized anxiety; referral to behavioral health.
+- key: bronchitis
+  title: Lingering cough
+  expected: [KX-R301]
+  note: >-
+    Forty-five-year-old with a productive cough for nine days after a cold. Lungs have scattered rhonchi
+    without focal findings. Chest X-ray is negative for pneumonia. Assessment: acute bronchitis, supportive care.
+- key: asthma-refill
+  title: Asthma refill
+  expected: [KX-R304]
+  note: >-
+    Twelve-year-old with mild intermittent asthma presents for a refill. Uses albuterol twice a month, mostly
+    with exercise. No wheezing on exam today.
+- key: migraine
+  title: Recurring headaches
+  expected: [KX-G401]
+  note: >-
+    Thirty-year-old with recurring migraine headaches, three a month, with light sensitivity and no aura.
+    Neurologic exam is normal. Start sumatriptan as needed and keep a headache diary.
+- key: tension-headache
+  title: Afternoon headaches, migraine ruled out
+  expected: [KX-G402]
+  note: >-
+    Fifty-year-old office worker with a band-like tension headache in the afternoons. Migraine ruled out
+    given no nausea or photophobia. Advised posture breaks and ibuprofen.
+- key: gastroenteritis
+  title: Stomach bug
+  expected: [KX-K602]
+  note: >-
+    Eight-year-old with vomiting and diarrhea since yesterday after a classmate was ill. Mildly dry mucous
+    membranes, tolerating fluids in clinic. Assessment: acute gastroenteritis, oral rehydration.
+- key: back-pain
+  title: Lifting injury
+  expected: [KX-S702]
+  note: >-
+    Thirty-eight-year-old warehouse worker with low back pain after lifting boxes. No leg weakness or numbness.
+    Muscle strain; heat and a physical therapy referral.
+- key: hand-laceration
+  title: Cut palm
+  expected: [KX-S703]
+  note: >-
+    Twenty-nine-year-old cut his palm on broken glass while washing dishes. A two-centimeter laceration was
+    irrigated and closed with three sutures. Tetanus is up to date.
+- key: afib-htn
+  title: Rhythm follow-up
+  expected: [KX-C120, KX-C101]
+  note: >-
+    Seventy-two-year-old with atrial fibrillation on apixaban for a routine follow-up. Rate is controlled
+    at 78. He also has essential hypertension, stable on amlodipine.
+- key: hypothyroid
+  title: Thyroid check
+  expected: [KX-M210]
+  note: >-
+    Sixty-year-old woman with hypothyroidism on levothyroxine. TSH is within range and she feels well.
+    Continue the current dose.
+- key: depression
+  title: Low mood
+  expected: [KX-D801, KX-D803]
+  note: >-
+    Thirty-five-year-old with two months of depressed mood, low energy, and trouble sleeping. PHQ-9 score is 16.
+    Assessment: major depressive episode; start sertraline and schedule therapy.
+- key: pneumonia
+  title: Fever and crackles
+  expected: [KX-R305]
+  note: >-
+    Sixty-seven-year-old with fever, cough, and right lower lobe crackles. Chest X-ray shows a right lower lobe
+    infiltrate consistent with community-acquired pneumonia. Start doxycycline.
+- key: exertional-chest-pain
+  title: Chest pain on exertion
+  expected: [KX-C110]
+  note: >-
+    Fifty-five-year-old with intermittent chest pain on exertion for a week. ECG shows no acute changes.
+    Referred for stress testing.
+- key: wellness-no-tobacco
+  title: Wellness visit, denies tobacco
+  expected: [KX-Z902]
+  note: >-
+    Wellness visit for a healthy 26-year-old. She denies tobacco use and drinks socially. Vaccines are current.
+- key: diabetes-normotensive
+  title: Diabetes review, blood pressure normal
+  expected: [KX-M201]
+  note: >-
+    Fifty-two-year-old with type 2 diabetes returns for review. Blood pressure today is 122/78, negative for
+    hypertension on repeat readings. Continue metformin.
+- key: family-history-diabetes
+  title: New patient, family history only
+  expected: []
+  note: >-
+    Forty-year-old establishing care. His mother has type 2 diabetes and his father had a heart attack at 60.
+    He exercises and takes no medications. Fasting glucose is normal.
+- key: allergies-family-asthma
+  title: Allergy refill, sister has asthma
+  expected: [KX-C102]
+  note: >-
+    Twenty-eight-year-old with seasonal allergies for a refill. Family history is notable for a sister with
+    asthma. She also has hyperlipidemia managed with diet. Lungs clear; continue loratadine.
+- key: insomnia
+  title: Early waking
+  expected: [KX-D803]
+  note: >-
+    Sixty-four-year-old with insomnia for three months, waking early and unable to fall back asleep.
+    Denies depressed mood. Sleep hygiene counseling and follow-up in six weeks.
+- key: reflux-cardiac-ruled-out
+  title: Burning after meals, cardiac cause ruled out
+  expected: [KX-K601]
+  note: >-
+    Forty-six-year-old with burning retrosternal discomfort after large meals, consistent with reflux.
+    Cardiac chest pain ruled out with a normal ECG and troponin. Start famotidine.
+- key: obesity-htn
+  title: Weight and blood pressure
+  expected: [KX-M220, KX-C101]
+  note: >-
+    Forty-four-year-old woman with obesity, BMI 36, and high blood pressure at three visits. Assessment:
+    essential hypertension; start hydrochlorothiazide. Nutrition referral.
+- key: exam-anxiety
+  title: Exam nerves
+  expected: [KX-D802]
+  note: >-
+    Twenty-two-year-old student reports feeling anxious before exams, with palpitations. Generalized anxiety
+    screening score is 12. Referred for cognitive behavioral therapy.
+- key: lipids-tobacco
+  title: Cholesterol and smoking
+  expected: [KX-C102, KX-Z901]
+  note: >-
+    Sixty-one-year-old man with hyperlipidemia on atorvastatin. He smokes a pack a day and is not ready to quit.
+    LDL is at goal.
+- key: asthma-no-pneumonia
+  title: Wheezing after a cold
+  expected: [KX-R304]
+  note: >-
+    Nine-year-old with asthma presenting with wheezing after a cold. Oxygen saturation is 97 percent and the
+    chest X-ray is negative for pneumonia. Albuterol and a short oral steroid course.
+- key: mild-pharyngitis
+  title: Scratchy throat
+  expected: [KX-R302]
+  note: >-
+    Seven-year-old with a sore throat and low-grade fever. Throat culture sent; exam shows mild pharyngitis
+    without exudate. Supportive care pending the culture.
+- key: saw-laceration
+  title: Saw injury, smoker
+  expected: [KX-S703, KX-Z901]
+  note: >-
+    Forty-eight-year-old carpenter with a laceration on the left hand from a saw. Wound closed with four sutures.
+    He smokes cigarettes daily and was counseled on quitting.

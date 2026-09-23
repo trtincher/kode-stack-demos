@@ -1,0 +1,5 @@
+<% if adapter.is_a?(Assistant::Adapters::Fake) %>
+  <span class="badge-warning" title="No API key is configured, so a deterministic keyword matcher stands in for the model.">Fake adapter · offline, deterministic</span>
+<% else %>
+  <span class="badge-info">Model · <%= adapter.label.delete_prefix("anthropic:") %></span>
+<% end %>
