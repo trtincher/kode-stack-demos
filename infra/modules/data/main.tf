@@ -40,27 +40,33 @@ resource "aws_db_instance" "this" {
   apply_immediately           = true
 }
 
-# ElastiCache Serverless Valkey: ~$6-9/month at the 100 MB floor, against
-# ~$11.70/month for a cache.t4g.micro node that also needs patching. Serverless
-# requires TLS, hence the rediss:// scheme below.
-resource "aws_elasticache_serverless_cache" "this" {
-  name                 = var.name
-  engine               = "valkey"
-  major_engine_version = "8"
+# One Valkey 8 node (cache.t4g.micro, ~$11.70/month). Not ElastiCache
+# Serverless: serverless runs in cluster mode and Sidekiq does not support
+# Redis Cluster (multi-key MULTI blocks fail with CROSSSLOT). TLS stays on,
+# hence the rediss:// scheme below.
+resource "aws_elasticache_subnet_group" "this" {
+  name       = var.name
+  subnet_ids = var.private_subnet_ids
+}
 
-  subnet_ids         = var.private_subnet_ids
+resource "aws_elasticache_replication_group" "this" {
+  replication_group_id = var.name
+  description          = "${var.name} Sidekiq + Action Cable"
+  engine               = "valkey"
+  engine_version       = "8.0"
+  node_type            = "cache.t4g.micro"
+  num_cache_clusters   = 1
+  port                 = 6379
+
+  subnet_group_name  = aws_elasticache_subnet_group.this.name
   security_group_ids = [var.cache_security_group_id]
 
-  cache_usage_limits {
-    data_storage {
-      maximum = 1
-      unit    = "GB"
-    }
-
-    ecpu_per_second {
-      maximum = 5000
-    }
-  }
+  automatic_failover_enabled = false
+  multi_az_enabled           = false
+  at_rest_encryption_enabled = true
+  transit_encryption_enabled = true
+  apply_immediately          = true
+  snapshot_retention_limit   = 0
 }
 
 resource "random_password" "secret_key_base" {
@@ -77,7 +83,7 @@ resource "aws_ssm_parameter" "database_url" {
 resource "aws_ssm_parameter" "redis_url" {
   name  = "/${var.name}/REDIS_URL"
   type  = "SecureString"
-  value = "rediss://${aws_elasticache_serverless_cache.this.endpoint[0].address}:${aws_elasticache_serverless_cache.this.endpoint[0].port}"
+  value = "rediss://${aws_elasticache_replication_group.this.primary_endpoint_address}:${aws_elasticache_replication_group.this.port}"
 }
 
 resource "aws_ssm_parameter" "secret_key_base" {

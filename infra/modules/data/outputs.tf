@@ -23,5 +23,5 @@ output "database_endpoint" {
 
 output "cache_endpoint" {
   description = "ElastiCache Serverless endpoint."
-  value       = aws_elasticache_serverless_cache.this.endpoint[0].address
+  value       = aws_elasticache_replication_group.this.primary_endpoint_address
 }
