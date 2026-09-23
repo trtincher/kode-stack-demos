@@ -10,6 +10,15 @@ Rails.application.routes.draw do
   # The Sidekiq dashboard has no authentication, so it is development-only.
   mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 
+  # Coding assistant + evals demo.
+  namespace :assistant do
+    root "suggestions#new"
+    resources :suggestions, only: :create
+    resources :eval_runs, only: %i[index create show]
+    resources :prompt_versions, only: :create
+    resource :reset, only: :create
+  end
+
   # Defines the root path route ("/")
   root "pages#home"
 end

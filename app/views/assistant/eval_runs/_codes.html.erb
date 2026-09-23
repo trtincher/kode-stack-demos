@@ -1,0 +1,13 @@
+<%# Code chips for a result row: hits green, misses struck through in red, extras amber. %>
+<span class="inline-flex flex-wrap gap-1">
+  <% codes.each do |code| %>
+    <% if result.hits.include?(code) %>
+      <span class="badge-success font-mono" title="Correct"><%= code %></span>
+    <% elsif side == :expected %>
+      <span class="badge-danger font-mono line-through" title="Missed"><%= code %></span>
+    <% else %>
+      <span class="badge-warning font-mono" title="Not expected"><%= code %></span>
+    <% end %>
+  <% end %>
+  <% if codes.empty? %><span class="text-xs text-slate-400">none</span><% end %>
+</span>
