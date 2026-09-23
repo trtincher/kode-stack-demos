@@ -9,7 +9,7 @@ class Review::CodesController < Review::BaseController
   end
 
   def edit
-    return render(partial: "review/codes/code", locals: row_locals) unless editable?
+    render(partial: "review/codes/code", locals: row_locals) unless editable?
   end
 
   def update

@@ -58,6 +58,6 @@ class Review::TimelineEntry
 
   def whodunnit_parts
     parts = version.whodunnit.to_s.split(" · ", 2)
-    parts.size == 2 ? parts : [ "System", version.whodunnit.presence || "seed" ]
+    parts.size == 2 ? parts : [ "System", version.whodunnit.presence || "Demo setup" ]
   end
 end
