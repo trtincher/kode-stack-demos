@@ -29,7 +29,10 @@ module "app" {
   public_subnet_ids     = module.network.public_subnet_ids
   alb_security_group_id = module.network.alb_security_group_id
   app_security_group_id = module.network.app_security_group_id
-  secret_parameter_arns = module.data.secret_parameter_arns
+  secret_parameter_arns = merge(
+    module.data.secret_parameter_arns,
+    var.anthropic_key_in_ssm ? { ANTHROPIC_API_KEY = data.aws_ssm_parameter.anthropic_api_key[0].arn } : {},
+  )
 }
 
 module "cicd" {
@@ -42,4 +45,14 @@ module "cicd" {
   ecr_repository_arn          = module.app.ecr_repository_arn
   ecs_service_arn             = module.app.service_arn
   ecs_task_role_arns          = module.app.task_role_arns
+}
+
+# The assistant demo's model key. Put out-of-band so it never touches state:
+#   aws ssm put-parameter --name /kode-stack-demos/ANTHROPIC_API_KEY --type SecureString --value ...
+# then apply with -var anthropic_key_in_ssm=true. with_decryption=false keeps
+# the ciphertext (not the key) in state; ECS only needs the ARN.
+data "aws_ssm_parameter" "anthropic_api_key" {
+  count           = var.anthropic_key_in_ssm ? 1 : 0
+  name            = "/${var.name}/ANTHROPIC_API_KEY"
+  with_decryption = false
 }

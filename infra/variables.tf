@@ -66,3 +66,9 @@ variable "db_allocated_storage" {
   type        = number
   default     = 20
 }
+
+variable "anthropic_key_in_ssm" {
+  description = "Set true once /<name>/ANTHROPIC_API_KEY exists in SSM; wires it into the task as a secret."
+  type        = bool
+  default     = false
+}
