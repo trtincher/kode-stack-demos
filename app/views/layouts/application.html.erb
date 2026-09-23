@@ -21,7 +21,17 @@
   </head>
 
   <body class="h-full bg-slate-50 text-slate-900">
-    <main class="mx-auto max-w-4xl px-6 py-12">
+    <header class="border-b border-slate-200 bg-white">
+      <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-1 px-6 py-3" aria-label="Demos">
+        <%= link_to "Kode Stack Demos", root_path, class: "mr-4 text-sm font-semibold tracking-tight text-slate-900" %>
+        <%= nav_link "Home", root_path %>
+        <% DEMOS.each do |demo| %>
+          <%= nav_link demo[:title], demo[:path] %>
+        <% end %>
+      </nav>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-10">
       <% if flash[:notice].present? %>
         <p class="mb-6 rounded-md bg-emerald-50 px-4 py-3 text-sm text-emerald-800 ring-1 ring-emerald-200">
           <%= flash[:notice] %>
