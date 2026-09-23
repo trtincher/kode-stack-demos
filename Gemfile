@@ -66,3 +66,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Official Anthropic SDK; the assistant demo's model adapter [https://github.com/anthropics/anthropic-sdk-ruby]
+gem "anthropic", "~> 1.73"
