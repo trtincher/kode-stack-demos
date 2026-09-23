@@ -24,12 +24,12 @@ module Assistant
       elsif note.length > EvalCase::MAX_NOTE
         render_status :failed, "Notes are capped at #{EvalCase::MAX_NOTE} characters.", :unprocessable_content
       else
+        # The page shows "queued" and clears the old answer itself when the
+        # request starts. Doing that here instead would race the job: a fast
+        # worker can broadcast before this response lands, and the late
+        # response would wipe its cards or overwrite "done".
         SuggestCodesJob.perform_later(request_id: request_id, note: note)
-        render turbo_stream: [
-          turbo_stream.replace("assistant_status", partial: "assistant/suggestions/status",
-            locals: { state: :queued, message: "Queued for a Sidekiq worker…" }),
-          turbo_stream.update("assistant_suggestions", "")
-        ]
+        render turbo_stream: []
       end
     end
 

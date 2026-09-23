@@ -25,6 +25,14 @@ module Assistant
         )
       end
 
+      # Appends are the streaming feel; this replace is the truth. If the page
+      # missed an append (the subscription landed late), the terminal list
+      # heals it.
+      Turbo::StreamsChannel.broadcast_replace_to(
+        stream, target: "assistant_suggestions",
+        partial: "assistant/suggestions/list", locals: { suggestions: suggestions }
+      )
+
       elapsed = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round
       summary = suggestions.empty? ? "No catalog codes found in this note" : "#{suggestions.size} #{"code".pluralize(suggestions.size)} suggested"
       broadcast_status(stream, :done, "#{summary} · prompt v#{prompt.version} · #{adapter.label} · #{elapsed} ms")
