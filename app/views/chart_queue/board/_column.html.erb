@@ -1,0 +1,5 @@
+<div id="queue_column_<%= status %>" class="space-y-3">
+  <% charts.each do |chart| %>
+    <%= render "chart_queue/charts/chart", chart: chart, viewer: local_assigns[:viewer] %>
+  <% end %>
+</div>

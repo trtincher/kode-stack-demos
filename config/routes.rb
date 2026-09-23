@@ -10,6 +10,22 @@ Rails.application.routes.draw do
   # The Sidekiq dashboard has no authentication, so it is development-only.
   mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 
+  # Chart queue demo (/queue). The module is ChartQueue because Ruby's ::Queue
+  # would shadow a Queue:: namespace.
+  namespace :queue, module: :chart_queue do
+    root "board#show"
+    get "columns", to: "board#columns", as: :columns
+    resources :charts, only: [] do
+      post :claim_next, on: :collection
+      member do
+        post :claim
+        post :complete
+        post :release
+      end
+    end
+    resource :reset, only: :create
+  end
+
   # Defines the root path route ("/")
   root "pages#home"
 end
