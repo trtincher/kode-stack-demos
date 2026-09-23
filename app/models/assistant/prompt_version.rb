@@ -23,6 +23,11 @@ module Assistant
 
     def self.current = order(version: :desc).first
 
+    # The current version, creating version 1 on a database nobody has seeded.
+    def self.current!
+      current || create!(version: 1, body: DEFAULT_BODY)
+    end
+
     def self.create_next!(body)
       create!(version: (maximum(:version) || 0) + 1, body: body.to_s.strip)
     end
