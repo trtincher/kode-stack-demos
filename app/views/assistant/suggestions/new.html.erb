@@ -16,17 +16,22 @@
 
 <%= render "assistant/tabs" %>
 
-<%= turbo_stream_from "assistant_request_#{@request_id}" %>
+<%# assistant-note keeps "Suggest codes" disabled until the stream below is
+    subscribed, and clears the previous answer when a request starts. %>
+<div class="grid gap-8 lg:grid-cols-5" data-controller="assistant-note"
+     data-action="turbo:submit-start->assistant-note#submitStart">
+  <%= turbo_stream_from "assistant_request_#{@request_id}" %>
+  <template data-assistant-note-target="queued">
+    <%= render "assistant/suggestions/status", state: :queued, message: "Queued for a Sidekiq worker…" %>
+  </template>
 
-<div class="grid gap-8 lg:grid-cols-5">
   <section class="lg:col-span-2" aria-labelledby="note-heading">
     <div class="mb-3 flex items-center justify-between gap-2">
       <h2 id="note-heading" class="section-label">Encounter note</h2>
       <%= render "assistant/adapter_badge", adapter: @adapter %>
     </div>
 
-    <%= form_with url: assistant_suggestions_path, class: "space-y-4",
-          data: { controller: "assistant-note" } do |form| %>
+    <%= form_with url: assistant_suggestions_path, class: "space-y-4" do |form| %>
       <%= hidden_field_tag :request_id, @request_id %>
 
       <fieldset>
@@ -52,7 +57,8 @@
       </div>
 
       <div class="flex items-center justify-between">
-        <%= form.submit "Suggest codes", class: "btn-primary", id: "suggest-codes" %>
+        <%= form.submit "Connecting…", class: "btn-primary", id: "suggest-codes", disabled: true,
+              data: { assistant_note_target: "submit", label: "Suggest codes" } %>
         <span class="text-xs text-slate-500">
           Prompt v<%= @prompt.version %> · <%= link_to "edit it on Evals", assistant_eval_runs_path, class: "underline" %>
         </span>
@@ -63,6 +69,6 @@
   <section class="lg:col-span-3" aria-labelledby="suggestions-heading">
     <h2 id="suggestions-heading" class="section-label mb-3">Suggested codes</h2>
     <%= render "assistant/suggestions/status", state: :idle, message: "Waiting for a note." %>
-    <ol id="assistant_suggestions" class="mt-4 space-y-3"></ol>
+    <%= render "assistant/suggestions/list", suggestions: [] %>
   </section>
 </div>
