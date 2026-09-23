@@ -22,6 +22,11 @@ gem "redis", ">= 5.0"
 # Background jobs for Active Job [https://sidekiq.org]
 gem "sidekiq", "~> 8.0"
 
+# json 3.0 made JSON.parse keyword-only; ActiveSupport 8.1.3 still passes an
+# options hash positionally, which breaks every Action Cable message decode.
+# Lift this pin once Rails ships a json-3-compatible ActiveSupport::JSON.decode.
+gem "json", "~> 2.16"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
