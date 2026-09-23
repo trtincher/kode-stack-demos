@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+
+  # App Runner runs a single container per service, so this demo rides its
+  # Sidekiq worker alongside the web process. Set RUN_SIDEKIQ=1 to start it.
+  # Demo-grade on purpose: a dedicated worker service is the real answer once
+  # there is real work to run.
+  if [ "${RUN_SIDEKIQ}" == "1" ]; then
+    bundle exec sidekiq -C config/sidekiq.yml &
+  fi
+fi
+
+exec "${@}"

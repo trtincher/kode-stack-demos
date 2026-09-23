@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class="h-full">
+  <head>
+    <title><%= content_for(:title) || "Kode Stack Demos" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Kode Stack Demos">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full bg-slate-50 text-slate-900">
+    <header class="border-b border-slate-200 bg-white">
+      <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-1 px-6 py-3" aria-label="Demos">
+        <%= link_to "Kode Stack Demos", root_path, class: "mr-4 text-sm font-semibold tracking-tight text-slate-900" %>
+        <%= nav_link "Home", root_path %>
+        <% DEMOS.each do |demo| %>
+          <%= nav_link demo[:title], demo[:path] %>
+        <% end %>
+      </nav>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-10">
+      <% if flash[:notice].present? %>
+        <p class="mb-6 rounded-md bg-emerald-50 px-4 py-3 text-sm text-emerald-800 ring-1 ring-emerald-200">
+          <%= flash[:notice] %>
+        </p>
+      <% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

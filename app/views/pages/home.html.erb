@@ -1,0 +1,35 @@
+<% content_for :title, "Kode Stack Demos" %>
+
+<header class="mb-10">
+  <h1 class="page-title text-3xl">Kode Stack Demos</h1>
+  <p class="mt-2 max-w-3xl text-slate-600">
+    Rails <%= Rails::VERSION::STRING %> &middot; Hotwire (Turbo + Stimulus) &middot; PostgreSQL 16 &middot; Sidekiq on Valkey,
+    deployed to AWS App Runner from a container image. Three small demos of a medical-coding workflow.
+    <strong class="font-medium text-slate-800">Synthetic data only.</strong>
+  </p>
+</header>
+
+<section class="mb-12" aria-labelledby="demos-heading">
+  <h2 id="demos-heading" class="section-label mb-3">Demos</h2>
+  <div class="grid gap-4 sm:grid-cols-3">
+    <% DEMOS.each do |demo| %>
+      <%= link_to demo[:path], class: "card-link", id: "demo-#{demo[:key]}" do %>
+        <h3 class="font-semibold text-slate-900"><%= demo[:title] %></h3>
+        <p class="mt-2 text-sm text-slate-600"><%= demo[:blurb] %></p>
+        <p class="mt-4 text-xs font-medium text-indigo-700"><%= demo[:stack] %></p>
+      <% end %>
+    <% end %>
+  </div>
+</section>
+
+<section class="max-w-xl" aria-labelledby="health-heading">
+  <div class="mb-3 flex items-baseline justify-between">
+    <h2 id="health-heading" class="section-label">Scaffold health</h2>
+    <%= button_to "Run heartbeat", heartbeat_path, class: "btn-primary" %>
+  </div>
+
+  <%# Subscribing here is what proves Action Cable: HeartbeatJob replaces the
+      panel below from inside a Sidekiq worker, with no page reload. %>
+  <%= turbo_stream_from "status" %>
+  <%= render "pages/status_panel", status: @status %>
+</section>
