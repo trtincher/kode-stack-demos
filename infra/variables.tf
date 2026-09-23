@@ -31,31 +31,28 @@ variable "create_github_oidc_provider" {
   default     = true
 }
 
-variable "create_service" {
-  description = <<-EOT
-    Create the App Runner service. Phase 1: false (network, data, ECR, roles).
-    Push an image to ECR, then phase 2: true.
-  EOT
-  type        = bool
-  default     = false
-}
-
 variable "image_tag" {
-  description = "ECR image tag App Runner deploys."
+  description = "ECR image tag the ECS task definition runs."
   type        = string
   default     = "latest"
 }
 
-variable "app_runner_cpu" {
-  description = "App Runner vCPU allocation."
-  type        = string
-  default     = "0.25 vCPU"
+variable "desired_count" {
+  description = "Number of running ECS tasks."
+  type        = number
+  default     = 1
 }
 
-variable "app_runner_memory" {
-  description = "App Runner memory allocation."
+variable "domain_name" {
+  description = "Public hostname for the app (gets an ACM cert and an A alias to the ALB)."
   type        = string
-  default     = "0.5 GB"
+  default     = "demos.travis-tincher.com"
+}
+
+variable "hosted_zone_name" {
+  description = "Route 53 public hosted zone that holds domain_name."
+  type        = string
+  default     = "travis-tincher.com"
 }
 
 variable "db_instance_class" {

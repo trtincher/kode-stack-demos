@@ -1,0 +1,6 @@
+<%# Replaced by the controller (queued) and by SuggestCodesJob (running, done, failed). %>
+<% badge = { idle: "badge", queued: "badge", running: "badge-info", done: "badge-success", failed: "badge-danger", rate_limited: "badge-warning" }.fetch(state.to_sym, "badge") %>
+<div id="assistant_status" class="flex items-center gap-3 text-sm text-slate-600" role="status" aria-live="polite" data-state="<%= state %>">
+  <span class="<%= badge %>"><%= state.to_s.humanize %></span>
+  <span><%= message %></span>
+</div>

@@ -1,5 +1,5 @@
 output "secret_parameter_arns" {
-  description = "SSM parameter ARNs keyed by the env var App Runner injects them as."
+  description = "SSM parameter ARNs keyed by the env var ECS injects them as."
   value = {
     DATABASE_URL    = aws_ssm_parameter.database_url.arn
     REDIS_URL       = aws_ssm_parameter.redis_url.arn
@@ -22,6 +22,6 @@ output "database_endpoint" {
 }
 
 output "cache_endpoint" {
-  description = "ElastiCache Serverless endpoint."
-  value       = aws_elasticache_serverless_cache.this.endpoint[0].address
+  description = "Valkey primary endpoint."
+  value       = aws_elasticache_replication_group.this.primary_endpoint_address
 }

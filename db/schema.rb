@@ -14,6 +14,63 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_120003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "assistant_eval_cases", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "expected_codes", default: [], null: false, array: true
+    t.string "key", null: false
+    t.text "note", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "showcase", default: false, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_assistant_eval_cases_on_key", unique: true
+  end
+
+  create_table "assistant_eval_results", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "error"
+    t.bigint "eval_case_id", null: false
+    t.bigint "eval_run_id", null: false
+    t.string "expected_codes", default: [], null: false, array: true
+    t.decimal "f1", precision: 5, scale: 4, null: false
+    t.string "got_codes", default: [], null: false, array: true
+    t.boolean "passed", default: false, null: false
+    t.decimal "precision", precision: 5, scale: 4, null: false
+    t.decimal "recall", precision: 5, scale: 4, null: false
+    t.jsonb "suggestions", default: [], null: false
+    t.datetime "updated_at", null: false
+    t.index ["eval_case_id"], name: "index_assistant_eval_results_on_eval_case_id"
+    t.index ["eval_run_id", "eval_case_id"], name: "index_assistant_eval_results_on_eval_run_id_and_eval_case_id", unique: true
+    t.index ["eval_run_id"], name: "index_assistant_eval_results_on_eval_run_id"
+  end
+
+  create_table "assistant_eval_runs", force: :cascade do |t|
+    t.string "adapter", null: false
+    t.integer "cases_done", default: 0, null: false
+    t.integer "cases_total", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "error"
+    t.datetime "finished_at"
+    t.decimal "mean_f1", precision: 5, scale: 4
+    t.decimal "mean_precision", precision: 5, scale: 4
+    t.decimal "mean_recall", precision: 5, scale: 4
+    t.integer "passed_count", default: 0, null: false
+    t.bigint "prompt_version_id", null: false
+    t.datetime "started_at"
+    t.string "status", default: "queued", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prompt_version_id"], name: "index_assistant_eval_runs_on_prompt_version_id"
+    t.index ["status"], name: "index_assistant_eval_runs_on_status"
+  end
+
+  create_table "assistant_prompt_versions", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "version", null: false
+    t.index ["version"], name: "index_assistant_prompt_versions_on_version", unique: true
+  end
+
   create_table "review_charts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "encounter_summary", null: false
@@ -49,5 +106,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_120003) do
     t.index ["item_type", "item_id"], name: "index_review_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "assistant_eval_results", "assistant_eval_cases", column: "eval_case_id", on_delete: :cascade
+  add_foreign_key "assistant_eval_results", "assistant_eval_runs", column: "eval_run_id", on_delete: :cascade
+  add_foreign_key "assistant_eval_runs", "assistant_prompt_versions", column: "prompt_version_id", on_delete: :cascade
   add_foreign_key "review_codes", "review_charts", column: "chart_id", on_delete: :cascade
 end

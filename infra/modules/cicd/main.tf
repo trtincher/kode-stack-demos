@@ -1,7 +1,7 @@
 # GitHub Actions -> AWS via OIDC, no long-lived keys. The role trusts only
-# workflow runs on one branch of one repo (main by default), and can only push
-# images to this stack's ECR repository. App Runner auto-deploys on push, so
-# the deploy workflow needs nothing beyond ECR.
+# workflow runs on one branch of one repo (main by default). It can push images
+# to this stack's ECR repository and roll this stack's ECS service (register a
+# task definition, update the service, pass the two task roles), nothing else.
 
 locals {
   oidc_url = "https://token.actions.githubusercontent.com"
@@ -68,6 +68,36 @@ resource "aws_iam_role_policy" "deploy_ecr" {
           "ecr:UploadLayerPart",
         ]
         Resource = var.ecr_repository_arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "deploy_ecs" {
+  name = "deploy-service"
+  role = aws_iam_role.deploy.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        # Neither action supports resource-level permissions.
+        Effect   = "Allow"
+        Action   = ["ecs:RegisterTaskDefinition", "ecs:DescribeTaskDefinition"]
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["ecs:UpdateService", "ecs:DescribeServices"]
+        Resource = var.ecs_service_arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = "iam:PassRole"
+        Resource = var.ecs_task_role_arns
+        Condition = {
+          StringEquals = { "iam:PassedToService" = "ecs-tasks.amazonaws.com" }
+        }
       }
     ]
   })

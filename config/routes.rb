@@ -25,6 +25,15 @@ Rails.application.routes.draw do
     end
   end
 
+  # Coding assistant + evals demo.
+  namespace :assistant do
+    root "suggestions#new"
+    resources :suggestions, only: :create
+    resources :eval_runs, only: %i[index create show]
+    resources :prompt_versions, only: :create
+    resource :reset, only: :create
+  end
+
   # Defines the root path route ("/")
   root "pages#home"
 end

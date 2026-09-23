@@ -1,0 +1,8 @@
+<% if (delta = run.delta) %>
+  <% f1_class = delta[:mean_f1].positive? ? "badge-success" : (delta[:mean_f1].negative? ? "badge-danger" : "badge") %>
+  <span class="<%= f1_class %>" title="Compared with run #<%= delta[:baseline].id %> (prompt v<%= delta[:baseline].prompt_version.version %>)">
+    F1 <%= format("%+.3f", delta[:mean_f1]) %> · pass <%= format("%+.0f", delta[:pass_rate] * 100) %> pts vs v<%= delta[:baseline].prompt_version.version %>
+  </span>
+<% elsif run.done? %>
+  <span class="text-xs text-slate-400">no other prompt version to compare yet</span>
+<% end %>
