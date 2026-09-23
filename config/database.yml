@@ -1,5 +1,7 @@
 # PostgreSQL 16. Development and test run against the compose services
-# (docker compose up -d); production reads DATABASE_URL from SSM via App Runner.
+# (docker compose up -d). Set DB_SUFFIX=queue (etc.) to give a parallel
+# worktree its own databases (kode_stack_demos_development_queue). Production
+# reads DATABASE_URL from SSM via App Runner.
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -11,14 +13,14 @@ default: &default
 
 development:
   <<: *default
-  database: kode_stack_demos_development
+  database: kode_stack_demos_development<%= "_#{ENV["DB_SUFFIX"]}" if ENV["DB_SUFFIX"].present? %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: kode_stack_demos_test
+  database: kode_stack_demos_test<%= "_#{ENV["DB_SUFFIX"]}" if ENV["DB_SUFFIX"].present? %>
 
 production:
   <<: *default
