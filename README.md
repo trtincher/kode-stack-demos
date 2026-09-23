@@ -1,3 +1,24 @@
-# kode-stack-demos
+# README
 
-Three small Rails 8 + Hotwire demos on one scaffold. Plan lives in the portfolio repo notes; app docs land here as it is built.
+This README would normally document whatever steps are necessary to get the
+application up and running.
+
+Things you may want to cover:
+
+* Ruby version
+
+* System dependencies
+
+* Configuration
+
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
