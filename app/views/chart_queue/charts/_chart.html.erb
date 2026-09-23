@@ -1,0 +1,53 @@
+<%# Rendered both for a request and for a broadcast (no session), so it never
+    asks who is viewing: owner-only controls carry data-owner-only and the
+    board's Stimulus controller shows them to the claiming coder's tabs. %>
+<% coder_slug = local_assigns[:viewer]&.slug %>
+<article id="<%= dom_id(chart) %>"
+         class="card space-y-2 transition"
+         data-queue-board-target="row"
+         data-coder="<%= chart.coder&.slug %>"
+         data-status="<%= chart.status %>">
+  <header class="flex items-start justify-between gap-2">
+    <div>
+      <p class="font-mono text-sm font-semibold text-slate-900"><%= chart.reference %></p>
+      <p class="text-xs text-slate-500"><%= chart.specialty %> &middot; <%= chart.chart_type %></p>
+    </div>
+    <span class="badge"><%= queue_payout(chart) %></span>
+  </header>
+
+  <p class="text-sm text-slate-700"><%= chart.summary %></p>
+
+  <% if chart.available? %>
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-xs text-slate-500"><%= queue_due(chart) %></span>
+      <%= form_with url: claim_queue_chart_path(chart), data: { controller: "queue-claim", action: "submit->queue-claim#pending turbo:submit-end->queue-claim#settle" } do %>
+        <%= hidden_field_tag :as, coder_slug, id: nil %>
+        <button type="submit" class="btn-primary" data-queue-claim-target="button">Claim</button>
+      <% end %>
+    </div>
+  <% elsif chart.claimed? %>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <span class="text-xs text-slate-600">Claimed by <%= queue_coder_chip(chart.coder) %></span>
+      <span class="badge-info font-mono tabular-nums"
+            data-controller="queue-countdown"
+            data-queue-countdown-expires-at-value="<%= chart.claim_expires_at.iso8601 %>"
+            title="Released automatically at the SLA">
+        <%= ChartQueue::Chart::CLAIM_SLA.in_minutes.to_i %>:00
+      </span>
+    </div>
+    <div class="flex gap-2" data-owner-only <%= "hidden" unless chart.held_by?(local_assigns[:viewer]) %>>
+      <%= form_with url: complete_queue_chart_path(chart) do %>
+        <%= hidden_field_tag :as, coder_slug, id: nil %>
+        <button type="submit" class="btn-primary">Complete</button>
+      <% end %>
+      <%= form_with url: release_queue_chart_path(chart) do %>
+        <%= hidden_field_tag :as, coder_slug, id: nil %>
+        <button type="submit" class="btn-secondary">Release</button>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="flex items-center gap-2 text-xs text-slate-600">
+      <span class="badge-success">Done</span> by <%= queue_coder_chip(chart.coder) %>
+    </p>
+  <% end %>
+</article>

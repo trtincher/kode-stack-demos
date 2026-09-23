@@ -1,0 +1,5 @@
+<%# The suggestion list. Starts empty; SuggestCodesJob appends one card per
+    code, then replaces the whole list with the final set when it finishes. %>
+<ol id="assistant_suggestions" class="mt-4 space-y-3" data-assistant-note-target="list">
+  <%= render partial: "assistant/suggestions/suggestion", collection: suggestions, as: :suggestion %>
+</ol>

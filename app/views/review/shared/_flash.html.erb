@@ -1,0 +1,5 @@
+<%# The demo's own live region: redirects and Turbo Stream updates both write
+    here, so screen readers hear every save and every refusal. %>
+<div id="review_flash" role="status" aria-live="polite" class="mb-4">
+  <%= render "review/shared/flash_message", notice: flash[:review_notice], alert: flash[:review_alert] %>
+</div>

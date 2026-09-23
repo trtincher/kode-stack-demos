@@ -1,0 +1,7 @@
+<section class="lg:col-span-2" aria-labelledby="timeline-heading">
+  <h2 id="timeline-heading" class="section-label mb-2">Audit timeline</h2>
+  <p class="mb-3 text-xs text-slate-500">Every state change and code edit, newest first (PaperTrail).</p>
+  <ol id="review_timeline" class="space-y-3">
+    <%= render partial: "review/charts/timeline_entry", collection: entries, as: :entry %>
+  </ol>
+</section>

@@ -1,0 +1,74 @@
+<% content_for :title, "Coding assistant · Kode Stack Demos" %>
+
+<header class="mb-6">
+  <h1 class="page-title">Coding assistant + evals</h1>
+  <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+    Pick a synthetic encounter note, or paste your own, and a Sidekiq job hands it to a model adapter.
+    The model can only answer through one tool, <code class="font-mono text-slate-800">suggest_codes</code>,
+    whose schema admits codes from a small made-up catalog, and every suggestion has to quote the sentence that
+    justifies it; a quote that isn't in the note gets flagged. Suggestions come back over Turbo Streams, one card
+    per code, as the job appends them. The Evals tab is the other half of the demo: a prompt change is only safe
+    when a golden set tells you what it broke, so you can edit the prompt there, re-run thirty graded cases, and see
+    the score move before anything ships. Your note is never stored; it lives in the job's arguments and is gone
+    when the job finishes.
+  </p>
+</header>
+
+<%= render "assistant/tabs" %>
+
+<%# assistant-note keeps "Suggest codes" disabled until the stream below is
+    subscribed, and clears the previous answer when a request starts. %>
+<div class="grid gap-8 lg:grid-cols-5" data-controller="assistant-note"
+     data-action="turbo:submit-start->assistant-note#submitStart">
+  <%= turbo_stream_from "assistant_request_#{@request_id}" %>
+  <template data-assistant-note-target="queued">
+    <%= render "assistant/suggestions/status", state: :queued, message: "Queued for a Sidekiq worker…" %>
+  </template>
+
+  <section class="lg:col-span-2" aria-labelledby="note-heading">
+    <div class="mb-3 flex items-center justify-between gap-2">
+      <h2 id="note-heading" class="section-label">Encounter note</h2>
+      <%= render "assistant/adapter_badge", adapter: @adapter %>
+    </div>
+
+    <%= form_with url: assistant_suggestions_path, class: "space-y-4" do |form| %>
+      <%= hidden_field_tag :request_id, @request_id %>
+
+      <fieldset>
+        <legend class="mb-2 text-xs text-slate-500">Samples (synthetic)</legend>
+        <div class="flex flex-wrap gap-2">
+          <% @samples.each do |sample| %>
+            <button type="button" class="btn-secondary" id="sample-<%= sample.key %>"
+                    data-action="assistant-note#pick"
+                    data-assistant-note-text-param="<%= sample.note %>"><%= sample.title %></button>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <div>
+        <%= form.label :note, "Note", class: "sr-only" %>
+        <%= form.text_area :note, rows: 10, maxlength: Assistant::EvalCase::MAX_NOTE, required: true,
+              placeholder: "Paste a synthetic note (no real patient data), up to #{Assistant::EvalCase::MAX_NOTE} characters.",
+              class: "block w-full rounded-md border-0 p-3 text-sm ring-1 ring-slate-300 focus:ring-2 focus:ring-indigo-500",
+              data: { assistant_note_target: "input", action: "input->assistant-note#count" } %>
+        <p class="mt-1 text-right text-xs text-slate-500">
+          <span data-assistant-note-target="counter">0</span> / <%= Assistant::EvalCase::MAX_NOTE %>
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <%= form.submit "Connecting…", class: "btn-primary", id: "suggest-codes", disabled: true,
+              data: { assistant_note_target: "submit", label: "Suggest codes" } %>
+        <span class="text-xs text-slate-500">
+          Prompt v<%= @prompt.version %> · <%= link_to "edit it on Evals", assistant_eval_runs_path, class: "underline" %>
+        </span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="lg:col-span-3" aria-labelledby="suggestions-heading">
+    <h2 id="suggestions-heading" class="section-label mb-3">Suggested codes</h2>
+    <%= render "assistant/suggestions/status", state: :idle, message: "Waiting for a note." %>
+    <%= render "assistant/suggestions/list", suggestions: [] %>
+  </section>
+</div>

@@ -1,0 +1,58 @@
+<% content_for :title, "Chart queue · Kode Stack Demos" %>
+
+<div data-controller="queue-board queue-tabs"
+     data-queue-board-coder-value="<%= current_coder&.slug %>"
+     data-queue-board-columns-url-value="<%= queue_columns_path(as: current_coder&.slug) %>"
+     data-action="submit->queue-board#stamp">
+  <%= turbo_stream_from ChartQueue::Chart::STREAM %>
+
+  <header class="mb-8">
+    <h1 class="page-title">Chart queue</h1>
+    <p class="mt-3 max-w-3xl text-slate-600">
+      The first bug every work marketplace ships is the double claim: two coders click Claim on the same chart
+      in the same instant and both think they have it. Here a claim is one database transaction that locks the
+      chart row with <code class="rounded bg-slate-100 px-1 text-sm">SELECT … FOR UPDATE SKIP LOCKED</code>, so the
+      second click finds the row taken and the chart flips to &ldquo;claimed by&rdquo; instead of being worked twice.
+      Open this board in two tabs as two different coders and race for one chart. Every tab updates live over
+      Action Cable, and a Sidekiq job puts back any claim held past its <%= ChartQueue::Chart::CLAIM_SLA.in_minutes.to_i %>-minute SLA.
+      <strong class="font-medium text-slate-800">All charts are synthetic.</strong>
+    </p>
+  </header>
+
+  <section class="card mb-6 space-y-3" aria-labelledby="queue_identity_heading">
+    <div class="flex flex-wrap items-center gap-2">
+      <h2 id="queue_identity_heading" class="section-label mr-2">You are</h2>
+      <% coders.each do |coder| %>
+        <%= link_to coder.name, queue_root_path(as: coder.slug),
+              class: coder == current_coder ? "btn-primary" : "btn-secondary",
+              aria: { current: (true if coder == current_coder) } %>
+      <% end %>
+    </div>
+    <p class="text-sm text-slate-600" data-queue-tabs-target="hint">
+      <% if current_coder %>
+        Now <%= link_to "open a second tab", queue_root_path, target: "_blank", class: "font-medium text-indigo-700 underline" %>,
+        pick a different coder there, and claim the same chart in both.
+      <% else %>
+        Pick a coder to start claiming. Each tab can be a different coder.
+      <% end %>
+    </p>
+  </section>
+
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex gap-2">
+      <%= form_with url: claim_next_queue_charts_path do %>
+        <%= hidden_field_tag :as, current_coder&.slug, id: nil %>
+        <button type="submit" class="btn-primary" <%= "disabled" unless current_coder %>>Claim next</button>
+      <% end %>
+      <%= form_with url: queue_reset_path, data: { turbo_confirm: "Reset the queue for everyone watching?" } do %>
+        <%= hidden_field_tag :as, current_coder&.slug, id: nil %>
+        <button type="submit" class="btn-secondary">Reset demo</button>
+      <% end %>
+    </div>
+    <p class="hidden text-xs text-amber-800" data-queue-board-target="polling">Live updates unavailable; refreshing every 5s.</p>
+  </div>
+
+  <div id="queue_toast" class="mb-4" aria-live="polite"></div>
+
+  <%= render "chart_queue/board/columns", columns: @columns, counts: @counts, viewer: current_coder %>
+</div>

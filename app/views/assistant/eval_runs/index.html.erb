@@ -1,0 +1,89 @@
+<% content_for :title, "Assistant evals · Kode Stack Demos" %>
+
+<header class="mb-6">
+  <h1 class="page-title">Coding assistant + evals</h1>
+  <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+    <%= @case_count %> synthetic notes with the codes a careful coder would assign. A run sends every note through
+    the assistant with the current prompt, one at a time, and scores each answer by set overlap: precision, recall,
+    and F1 on the codes, with a pass only for an exact match. Each run is compared with the last finished run of a
+    different prompt version, so you can see what an edit bought or broke.
+  </p>
+</header>
+
+<%= render "assistant/tabs" %>
+
+<div class="grid gap-8 lg:grid-cols-5">
+  <section class="lg:col-span-2" aria-labelledby="prompt-heading">
+    <div class="mb-3 flex items-center justify-between gap-2">
+      <h2 id="prompt-heading" class="section-label">Prompt v<%= @prompt.version %></h2>
+      <%= render "assistant/adapter_badge", adapter: @adapter %>
+    </div>
+
+    <%= form_with url: assistant_prompt_versions_path, class: "space-y-3" do |form| %>
+      <%= form.label :body, "Prompt text", class: "sr-only" %>
+      <%= form.text_area :body, value: @prompt.body, rows: 9, maxlength: Assistant::PromptVersion::MAX_BODY,
+            class: "block w-full rounded-md border-0 p-3 font-mono text-xs leading-5 ring-1 ring-slate-300 focus:ring-2 focus:ring-indigo-500" %>
+      <p class="text-xs text-slate-500">The catalog of KX codes is appended automatically.</p>
+      <%= form.submit "Save as v#{@prompt.version + 1}", class: "btn-secondary" %>
+    <% end %>
+
+    <div class="mt-4 rounded-md bg-indigo-50 p-3 text-xs leading-5 text-indigo-900 ring-1 ring-indigo-200">
+      <p class="font-semibold">Try it</p>
+      <p class="mt-1">
+        Run the evals on v1, then add this line to the prompt, save, and run again. Several golden notes mention a
+        finding only to deny it or rule it out, and v1 codes them anyway.
+      </p>
+      <p class="mt-2 font-mono text-indigo-950"><%= Assistant::PromptVersion::NEGATION_HINT %></p>
+      <% if @adapter.is_a?(Assistant::Adapters::Fake) %>
+        <p class="mt-2 text-indigo-800">
+          Offline, the Fake adapter is a keyword matcher that honours exactly this instruction, so the score moves;
+          it still codes family history, which is the kind of miss a real model has to be prompted out of.
+        </p>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="lg:col-span-3" aria-labelledby="runs-heading">
+    <div class="mb-3 flex items-center justify-between gap-2">
+      <h2 id="runs-heading" class="section-label">Runs</h2>
+      <div class="flex gap-2">
+        <% if @active_run %>
+          <%= link_to "Run ##{@active_run.id} in progress", assistant_eval_run_path(@active_run), class: "btn-secondary" %>
+        <% else %>
+          <%= button_to "Run evals on v#{@prompt.version}", assistant_eval_runs_path, class: "btn-primary", id: "run-evals" %>
+        <% end %>
+        <%= button_to "Reset demo", assistant_reset_path, class: "btn-danger",
+              form: { data: { turbo_confirm: "Reload the golden set, reset the prompt to v1, and delete every run?" } } %>
+      </div>
+    </div>
+
+    <% if @runs.any? %>
+      <div class="overflow-x-auto rounded-lg bg-white ring-1 ring-slate-200">
+        <table class="min-w-full divide-y divide-slate-100 text-sm">
+          <thead class="text-left">
+            <tr>
+              <th class="section-label px-4 py-2">Run</th>
+              <th class="section-label px-4 py-2">Prompt</th>
+              <th class="section-label px-4 py-2">Pass</th>
+              <th class="section-label px-4 py-2">F1</th>
+              <th class="section-label px-4 py-2">Change</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @runs.each do |run| %>
+              <tr>
+                <td class="px-4 py-2"><%= link_to "##{run.id}", assistant_eval_run_path(run), class: "text-indigo-700 hover:underline" %> <span class="text-xs text-slate-400"><%= run.status unless run.done? %></span></td>
+                <td class="px-4 py-2">v<%= run.prompt_version.version %> <span class="text-xs text-slate-400"><%= run.adapter %></span></td>
+                <td class="px-4 py-2 tabular-nums"><%= run.pass_rate ? format("%.0f%%", run.pass_rate * 100) : "–" %></td>
+                <td class="px-4 py-2 tabular-nums"><%= run.mean_f1 ? format("%.3f", run.mean_f1) : "–" %></td>
+                <td class="px-4 py-2"><%= render "assistant/eval_runs/delta", run: run %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="card text-sm text-slate-600">No runs yet. Run the evals to score prompt v<%= @prompt.version %>.</p>
+    <% end %>
+  </section>
+</div>

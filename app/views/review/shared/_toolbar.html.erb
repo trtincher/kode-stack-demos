@@ -1,0 +1,18 @@
+<%# Role switch + reset. The role lives in the session; every audit entry is
+    stamped with it. %>
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+  <div class="flex items-center gap-2" role="group" aria-label="Acting role">
+    <span class="section-label">You are:</span>
+    <% Review::Role.all.each do |role| %>
+      <% active = role == current_role %>
+      <%= button_to role.label, review_role_path, method: :patch, params: { role: role.key },
+            class: active ? "btn-primary" : "btn-secondary",
+            form: { class: "inline" },
+            aria: { pressed: active },
+            title: "#{role.name} (#{role.label})" %>
+    <% end %>
+    <span class="text-sm text-slate-500"><%= current_role.name %></span>
+  </div>
+  <%= button_to "Reset demo", review_reset_path, class: "btn-danger",
+        form: { data: { turbo_confirm: "Reseed all review charts? Your edits will be discarded." } } %>
+</div>

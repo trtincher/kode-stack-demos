@@ -1,0 +1,27 @@
+<%# Replaced in place by HeartbeatJob over Action Cable. %>
+<div id="status_panel" class="overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
+  <dl class="divide-y divide-slate-100">
+    <div class="flex items-center justify-between px-4 py-3">
+      <dt class="text-sm font-medium text-slate-700">PostgreSQL</dt>
+      <dd><%= status_badge status.database_ok? %></dd>
+    </div>
+
+    <div class="flex items-center justify-between px-4 py-3">
+      <dt class="text-sm font-medium text-slate-700">Redis / Valkey</dt>
+      <dd><%= status_badge status.redis_ok? %></dd>
+    </div>
+
+    <div class="flex items-center justify-between px-4 py-3">
+      <dt class="text-sm font-medium text-slate-700">Last Sidekiq heartbeat</dt>
+      <dd class="text-sm text-slate-600">
+        <% if (beat = status.last_heartbeat_at) %>
+          <span data-controller="relative-time" data-relative-time-at-value="<%= beat.iso8601 %>">
+            <%= beat.iso8601 %>
+          </span>
+        <% else %>
+          <span class="text-slate-400">never &mdash; run the heartbeat</span>
+        <% end %>
+      </dd>
+    </div>
+  </dl>
+</div>
