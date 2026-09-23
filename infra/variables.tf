@@ -31,6 +31,15 @@ variable "create_github_oidc_provider" {
   default     = true
 }
 
+variable "create_service" {
+  description = <<-EOT
+    Create the App Runner service. Phase 1: false (network, data, ECR, roles).
+    Push an image to ECR, then phase 2: true.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "image_tag" {
   description = "ECR image tag App Runner deploys."
   type        = string
