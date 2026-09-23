@@ -17,7 +17,7 @@ gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails"
 # Redis/Valkey backs Action Cable, the Rails cache, and Sidekiq
-gem "redis", ">= 5.0"
+gem "redis", ">= 5.0", "< 6" # Action Cable 8.1's redis adapter requires redis < 6
 
 # Background jobs for Active Job [https://sidekiq.org]
 gem "sidekiq", "~> 8.0"
