@@ -1,0 +1,35 @@
+<section class="card" aria-labelledby="actions-heading">
+  <h2 id="actions-heading" class="section-label mb-3">Review</h2>
+
+  <% if chart.return_note.present? && (chart.returned? || current_role.reviewer?) && !chart.approved? %>
+    <div class="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">
+      <p class="font-medium">Reviewer's return note</p>
+      <p><%= chart.return_note %></p>
+    </div>
+  <% end %>
+
+  <% if current_role.reviewer? && chart.in_review? %>
+    <div class="space-y-4">
+      <%= button_to "Approve", approve_review_chart_path(chart), method: :patch, class: "btn-primary",
+            data: { review_shortcuts_target: "approve" }, aria: { keyshortcuts: "a" } %>
+      <%= form_with url: return_to_coder_review_chart_path(chart), method: :patch, scope: :chart, class: "space-y-2" do |f| %>
+        <%= f.label :return_note, "Return note (tells the coder what to fix)", class: "block text-sm font-medium text-slate-700" %>
+        <%= f.text_area :return_note, rows: 3, required: true, value: "",
+              class: "block w-full rounded-md border-slate-300 text-sm shadow-sm ring-1 ring-slate-300 focus:ring-indigo-500 p-2",
+              data: { review_shortcuts_target: "returnNote" }, aria: { keyshortcuts: "r" } %>
+        <%= f.submit "Return to coder", class: "btn-danger" %>
+      <% end %>
+    </div>
+  <% elsif current_role.coder? && (chart.draft? || chart.returned?) %>
+    <p class="mb-3 text-sm text-slate-600">
+      <%= chart.returned? ? "Revise the codes above, then resubmit." : "Check the codes above, then send the chart to review." %>
+    </p>
+    <%= button_to "Submit for review", submit_review_chart_path(chart), method: :patch, class: "btn-primary" %>
+  <% elsif chart.approved? %>
+    <p class="text-sm text-slate-600">Approved. This is a terminal state: the chart and its codes are locked.</p>
+  <% elsif chart.in_review? %>
+    <p class="text-sm text-slate-600">Waiting on the reviewer. Switch to Reviewer to approve or return it.</p>
+  <% else %>
+    <p class="text-sm text-slate-600">With the coder. Switch to Coder to revise and submit it.</p>
+  <% end %>
+</section>

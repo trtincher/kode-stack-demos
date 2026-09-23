@@ -1,0 +1,6 @@
+<%= turbo_stream.replace dom_id(@code) do %>
+  <%= render "review/codes/code", code: @code, chart: @chart, editable: false %>
+<% end %>
+<%= turbo_stream.update "review_flash" do %>
+  <%= render "review/shared/flash_message", alert: @alert %>
+<% end %>
