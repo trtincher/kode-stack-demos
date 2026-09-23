@@ -1,0 +1,10 @@
+<%# Assistant / Evals tab strip. %>
+<nav class="mb-8 flex gap-1 border-b border-slate-200" aria-label="Assistant demo">
+  <% [ [ "Assistant", assistant_root_path, controller_name == "suggestions" ],
+       [ "Evals", assistant_eval_runs_path, controller_name == "eval_runs" ] ].each do |label, path, active| %>
+    <%= link_to label, path,
+          class: "-mb-px border-b-2 px-4 py-2 text-sm font-medium #{active ? "border-slate-900 text-slate-900" : "border-transparent text-slate-500 hover:text-slate-800"}",
+          aria: { current: ("page" if active) } %>
+  <% end %>
+</nav>
+<div id="assistant_flash"></div>

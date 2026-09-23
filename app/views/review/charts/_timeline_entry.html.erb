@@ -1,0 +1,29 @@
+<% dot = { transition: "bg-indigo-500", code_edit: "bg-amber-500", note: "bg-amber-500" }.fetch(entry.kind, "bg-slate-400") %>
+<li id="<%= entry.dom_id %>" class="card flex gap-3 text-sm">
+  <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full <%= dot %>" aria-hidden="true"></span>
+  <div class="min-w-0 flex-1">
+    <p>
+      <strong class="font-medium text-slate-900"><%= entry.actor %></strong>
+      <span class="badge"><%= entry.role_label %></span>
+      <%= entry.headline %>
+    </p>
+    <p class="text-xs text-slate-500">
+      <time datetime="<%= entry.created_at.iso8601 %>" data-controller="relative-time"
+            data-relative-time-at-value="<%= entry.created_at.iso8601 %>"><%= l(entry.created_at, format: :short) %></time>
+    </p>
+    <% if entry.diffs.any? %>
+      <dl class="mt-2 space-y-1">
+        <% entry.diffs.each do |field, before, after| %>
+          <% label = field == "State" ? ->(v) { Review::Chart::STATE_LABELS.fetch(v.to_s, v) } : ->(v) { v } %>
+          <div>
+            <dt class="text-xs font-medium text-slate-500"><%= field %></dt>
+            <dd class="break-words">
+              <% if before.present? %><del class="rounded bg-rose-50 px-1 text-rose-700"><%= label.(before) %></del> →<% end %>
+              <ins class="rounded bg-emerald-50 px-1 text-emerald-800 no-underline"><%= after.present? ? label.(after) : "(cleared)" %></ins>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    <% end %>
+  </div>
+</li>

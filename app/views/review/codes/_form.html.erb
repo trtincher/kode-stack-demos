@@ -1,0 +1,28 @@
+<%= turbo_frame_tag code do %>
+  <%= form_with model: code, url: review_chart_code_path(chart, code), method: :patch, class: "card space-y-3" do |f| %>
+    <% if code.errors.any? %>
+      <ul role="alert" class="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-800 ring-1 ring-rose-200">
+        <% code.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    <% end %>
+    <% field = "block w-full rounded-md p-2 text-sm ring-1 ring-slate-300 focus:ring-indigo-500" %>
+    <div class="grid gap-3 sm:grid-cols-4">
+      <div>
+        <%= f.label :code, "ICD-10-CM code", class: "block text-xs font-medium text-slate-700" %>
+        <%= f.text_field :code, class: "#{field} font-mono", autocomplete: "off", data: { controller: "review-autofocus" } %>
+      </div>
+      <div class="sm:col-span-3">
+        <%= f.label :description, class: "block text-xs font-medium text-slate-700" %>
+        <%= f.text_field :description, class: field %>
+      </div>
+    </div>
+    <div>
+      <%= f.label :rationale, class: "block text-xs font-medium text-slate-700" %>
+      <%= f.text_area :rationale, rows: 2, class: field %>
+    </div>
+    <div class="flex gap-2">
+      <%= f.submit "Save code", class: "btn-primary" %>
+      <%= link_to "Cancel", review_chart_code_path(chart, code), class: "btn-secondary" %>
+    </div>
+  <% end %>
+<% end %>

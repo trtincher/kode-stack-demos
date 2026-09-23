@@ -1,0 +1,17 @@
+<% content_for :title, "Eval run ##{@run.id} · Kode Stack Demos" %>
+
+<header class="mb-6">
+  <h1 class="page-title">Eval run #<%= @run.id %></h1>
+</header>
+
+<%= render "assistant/tabs" %>
+
+<p class="mb-4 text-sm"><%= link_to "← All runs and the prompt editor", assistant_eval_runs_path, class: "text-indigo-700 hover:underline" %></p>
+
+<%= turbo_stream_from @run.stream_name %>
+<%= render "assistant/eval_runs/run", run: @run %>
+
+<details class="mt-6 text-sm">
+  <summary class="cursor-pointer text-slate-600">Prompt v<%= @run.prompt_version.version %> as run</summary>
+  <pre class="mt-2 whitespace-pre-wrap rounded-md bg-slate-100 p-3 text-xs text-slate-800"><%= @run.prompt_version.body %></pre>
+</details>

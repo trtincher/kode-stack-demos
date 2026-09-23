@@ -1,4 +1,4 @@
-# PostgreSQL and Valkey, plus the three SSM parameters App Runner injects as
+# PostgreSQL and Valkey, plus the three SSM parameters ECS injects as
 # secrets. Terraform generates the credentials, so the operator sets nothing by
 # hand: the database password and SECRET_KEY_BASE never leave state and SSM.
 

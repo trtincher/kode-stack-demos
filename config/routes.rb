@@ -26,6 +26,30 @@ Rails.application.routes.draw do
     resource :reset, only: :create
   end
 
+  # Review workflow demo: a coded chart through QA review (aasm + PaperTrail).
+  namespace :review do
+    root "charts#index"
+    resource :role, only: :update
+    resource :reset, only: :create
+    resources :charts, only: %i[index show] do
+      member do
+        patch :submit
+        patch :return_to_coder
+        patch :approve
+      end
+      resources :codes, only: %i[show edit update]
+    end
+  end
+
+  # Coding assistant + evals demo.
+  namespace :assistant do
+    root "suggestions#new"
+    resources :suggestions, only: :create
+    resources :eval_runs, only: %i[index create show]
+    resources :prompt_versions, only: :create
+    resource :reset, only: :create
+  end
+
   # Defines the root path route ("/")
   root "pages#home"
 end

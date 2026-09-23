@@ -17,7 +17,7 @@ gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails"
 # Redis/Valkey backs Action Cable, the Rails cache, and Sidekiq
-gem "redis", ">= 5.0"
+gem "redis", ">= 5.0", "< 6" # Action Cable 8.1's redis adapter requires redis < 6
 
 # Background jobs for Active Job [https://sidekiq.org]
 gem "sidekiq", "~> 8.0"
@@ -26,6 +26,10 @@ gem "sidekiq", "~> 8.0"
 # options hash positionally, which breaks every Action Cable message decode.
 # Lift this pin once Rails ships a json-3-compatible ActiveSupport::JSON.decode.
 gem "json", "~> 2.16"
+
+# Review demo: the chart state machine and its audit trail
+gem "aasm", "~> 6.0"
+gem "paper_trail", "~> 17.0"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
@@ -66,3 +70,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Official Anthropic SDK; the assistant demo's model adapter [https://github.com/anthropics/anthropic-sdk-ruby]
+gem "anthropic", "~> 1.73"

@@ -1,0 +1,17 @@
+<%# One code row, wrapped in its own Turbo Frame so edits swap only this row. %>
+<%= turbo_frame_tag code do %>
+  <div class="card flex items-start gap-3 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500"
+       tabindex="0" data-review-shortcuts-target="row"
+       aria-label="<%= code.code %>: <%= code.description %>"
+       <% if local_assigns[:autofocus] %>data-controller="review-autofocus"<% end %>>
+    <span class="font-mono text-sm font-semibold text-slate-900"><%= code.code %></span>
+    <div class="min-w-0 flex-1">
+      <p class="text-sm text-slate-800"><%= code.description %></p>
+      <% if code.rationale.present? %><p class="mt-1 text-xs text-slate-500"><%= code.rationale %></p><% end %>
+    </div>
+    <% if editable %>
+      <%= link_to "Edit", edit_review_chart_code_path(chart, code), class: "btn-secondary",
+            data: { review_edit: true }, aria: { label: "Edit #{code.code}", keyshortcuts: "e" } %>
+    <% end %>
+  </div>
+<% end %>

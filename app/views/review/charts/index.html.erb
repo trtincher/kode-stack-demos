@@ -1,0 +1,42 @@
+<% content_for :title, "Review workflow · Kode Stack Demos" %>
+
+<header class="mb-6">
+  <h1 class="page-title">Review workflow</h1>
+  <p class="mt-2 max-w-3xl text-slate-600">
+    A coded chart moves from draft to review, then back to the coder or on to approval, and it can only move along
+    those paths: an <code>aasm</code> state machine refuses anything else, and PaperTrail records who changed what and
+    when, down to the field. That pairing is how a QA workflow stays honest, because nobody can skip review or
+    quietly edit a code without it showing up in the audit trail. Act as the coder or the reviewer from the switch
+    below; the reviewer edits codes inline and can press <kbd>a</kbd> to approve or <kbd>r</kbd> to return.
+    The codes are real ICD-10-CM codes; every chart is synthetic.
+  </p>
+</header>
+
+<%= render "review/shared/toolbar" %>
+<%= render "review/shared/flash" %>
+
+<div class="space-y-8">
+  <% @groups.each do |state, charts| %>
+    <section aria-labelledby="state-<%= state %>">
+      <h2 id="state-<%= state %>" class="mb-3 flex items-center gap-2">
+        <span class="section-label"><%= Review::Chart::STATE_LABELS.fetch(state) %></span>
+        <span class="<%= Review::Chart::STATE_BADGES.fetch(state) %>" aria-label="<%= pluralize(@counts.fetch(state, 0), "chart") %>"><%= @counts.fetch(state, 0) %></span>
+      </h2>
+      <% if charts.any? %>
+        <ul class="grid gap-3 sm:grid-cols-2">
+          <% charts.each do |chart| %>
+            <li>
+              <%= link_to review_chart_path(chart), class: "card-link", id: dom_id(chart) do %>
+                <p class="font-semibold text-slate-900"><%= chart.title %></p>
+                <p class="mt-1 line-clamp-2 text-sm text-slate-600"><%= chart.encounter_summary %></p>
+                <p class="mt-3 text-xs font-medium text-slate-500"><%= pluralize(chart.codes.size, "code") %></p>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-slate-500">No charts.</p>
+      <% end %>
+    </section>
+  <% end %>
+</div>

@@ -8,8 +8,18 @@ output "private_subnet_ids" {
   value       = aws_subnet.private[*].id
 }
 
+output "public_subnet_ids" {
+  description = "Public subnet ids, one per AZ (ALB and ECS tasks)."
+  value       = aws_subnet.public[*].id
+}
+
+output "alb_security_group_id" {
+  description = "Security group for the ALB."
+  value       = aws_security_group.alb.id
+}
+
 output "app_security_group_id" {
-  description = "Security group for the App Runner VPC connector."
+  description = "Security group for the ECS tasks."
   value       = aws_security_group.app.id
 }
 
