@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t kode_stack_demos .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name kode_stack_demos kode_stack_demos
+# Production image for AWS App Runner (see infra/). Build and run by hand:
+# docker build -t kode-stack-demos:local .
+# docker run -p 8080:8080 -e SECRET_KEY_BASE=... -e DATABASE_URL=... -e REDIS_URL=... kode-stack-demos:local
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
@@ -25,7 +25,8 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
-    LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+    LD_PRELOAD="/usr/local/lib/libjemalloc.so" \
+    HTTP_PORT="8080"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -54,9 +55,6 @@ RUN bundle exec bootsnap precompile -j 1 app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-
-
-
 # Final stage for app image
 FROM base
 
@@ -72,6 +70,8 @@ COPY --chown=rails:rails --from=build /rails /rails
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
+# Start server via Thruster by default, this can be overwritten at runtime.
+# Thruster listens on HTTP_PORT (8080: an unprivileged port for the non-root
+# user; App Runner's port is set to match in infra/modules/app).
+EXPOSE 8080
 CMD ["./bin/thrust", "./bin/rails", "server"]
