@@ -1,0 +1,12 @@
+<%# One chart changed status: pull its row, place it in its new column, and
+    refresh the counts. Broadcast to every board and returned to the clicker. %>
+<%= turbo_stream.remove chart %>
+<% if chart.available? %>
+  <%# Released: re-render the column so it keeps due-date order. %>
+  <%= turbo_stream.replace "queue_column_available",
+        partial: "chart_queue/board/column",
+        locals: { status: "available", charts: ChartQueue::Chart.available.order(:due_at, :id) } %>
+<% else %>
+  <%= turbo_stream.prepend "queue_column_#{chart.status}", partial: "chart_queue/charts/chart", locals: { chart: chart } %>
+<% end %>
+<%= turbo_stream.replace "queue_counts", partial: "chart_queue/board/counts", locals: { counts: ChartQueue::Chart.counts } %>

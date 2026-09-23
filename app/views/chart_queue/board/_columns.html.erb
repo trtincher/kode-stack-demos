@@ -1,0 +1,11 @@
+<div id="queue_columns" class="space-y-4">
+  <%= render "chart_queue/board/counts", counts: counts %>
+  <div class="grid gap-6 md:grid-cols-3">
+    <% { "available" => "Available", "claimed" => "Claimed", "done" => "Done" }.each do |status, label| %>
+      <section aria-labelledby="queue_heading_<%= status %>">
+        <h2 id="queue_heading_<%= status %>" class="section-label mb-3"><%= label %></h2>
+        <%= render "chart_queue/board/column", status: status, charts: columns[status], viewer: local_assigns[:viewer] %>
+      </section>
+    <% end %>
+  </div>
+</div>

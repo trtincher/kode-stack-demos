@@ -1,0 +1,4 @@
+<%= render "chart_queue/charts/moved", chart: @chart if @chart %>
+<%= turbo_stream.update "queue_toast" do %>
+  <p class="rounded-md px-4 py-3 text-sm ring-1 <%= queue_toast_class(@tone) %>" role="status"><%= @message %></p>
+<% end %>
